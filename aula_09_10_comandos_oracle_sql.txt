@@ -1,0 +1,121 @@
+
+
+
+//	Selecionar todas tabelas
+SELECT owner, table_name FROM all_tables;
+
+//	Selecionar tabelas criadas pelo usuário
+SELECT * FROM all_tables WHERE owner LIKE 'TADS_BD30';
+
+//	Excluir tabela
+DROP TABLE cidade;
+
+//	Listar estrutura da tabela
+DESCRIBE cidade;
+
+//	Criar tabela
+CREATE TABLE cidade
+(	codigo NUMBER(10) CONSTRAINT pkcod_ses PRIMARY KEY,
+ 	nome VARCHAR2(50)
+);
+
+//	Selecionar items da tabela
+SELECT * FROM cidade;
+
+//	Inserir item na tabela
+INSERT INTO cidade (codigo, nome) VALUES (0, 'Canoas');
+
+//	Excluir item da tabela
+DELETE FROM cidade WHERE codigo = 0 AND nome = 'Canoas';
+
+//	Alterar estrutura da tabela
+ALTER TABLE cidade ADD estado VARCHAR2(50);
+
+//	Criar tabela sem chave primária
+CREATE TABLE cidade
+(	codigo NUMBER(10),
+ 	nome VARCHAR2(50)
+);
+
+//	Adicionar primary key em tabela já criada
+ALTER TABLE cidade ADD CONSTRAINT pk_cidade PRIMARY KEY (codigo);
+
+//	Excluir primary key
+ALTER TABLE cidade DROP CONSTRAINT pk_cidade;
+
+//	Adicionar foreign key em tabela já criada
+ALTER TABLE veiculos ADD CONSTRAINT fk_cod_cidade FOREIGN KEY (cod_cidade) REFERENCES cidade(codigo);
+
+//	Criar tabela com chave estrangeira
+CREATE TABLE products
+( product_id numeric(10) not null,
+  supplier_id numeric(10) not null,
+  CONSTRAINT fk_supplier
+    FOREIGN KEY (supplier_id)
+    REFERENCES supplier(supplier_id)
+);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+CREATE TABLE cidade
+(	codigo NUMBER(10) CONSTRAINT pkcodigo_cidade PRIMARY KEY,
+ 	nome VARCHAR2(50)
+);
+
+CREATE TABLE proprietarios
+(	cnh NUMBER(11) CONSTRAINT pkcnh_proprietarios PRIMARY KEY,
+ 	nome VARCHAR2(50) NOT NULL,
+	endereco VARCHAR2(50)
+);
+
+CREATE TABLE cor
+(	codigo NUMBER(10) CONSTRAINT pkcodigo_cor PRIMARY KEY,
+ 	nome VARCHAR2(50)
+);
+
+CREATE TABLE veiculos
+(	chassis VARCHAR2(15) CONSTRAINT pkchassis_veiculos PRIMARY KEY,
+ 	placa VARCHAR2(7),
+ 	tipo VARCHAR2(5),
+ 	venc DATE,
+	ipva VARCHAR2(10),
+	cod_cidade NUMBER(10),
+	cnh_proprietarios NUMBER(11),
+	cod_cor NUMBER(10),
+	CONSTRAINT fk_cod_cidade FOREIGN KEY (cod_cidade) REFERENCES cidade(codigo),
+	CONSTRAINT fk_cnh_proprietarios FOREIGN KEY (cnh_proprietarios) REFERENCES proprietarios(cnh),
+	CONSTRAINT fk_cod_cor FOREIGN KEY (cod_cor) REFERENCES cor(codigo)
+);
+
+CREATE TABLE multas
+(	codigo NUMBER(10) CONSTRAINT pkcodigo_multas PRIMARY KEY,
+ 	tipo VARCHAR2(15),
+	data DATE NOT NULL,
+	valor NUMBER(8, 2),
+	chassis VARCHAR2(15) NOT NULL,
+	CONSTRAINT fk_chassis_veiculos FOREIGN KEY (chassis) REFERENCES veiculos(chassis)
+);
+
+
+
+
+
+
+
+
+
+
+
+
+
