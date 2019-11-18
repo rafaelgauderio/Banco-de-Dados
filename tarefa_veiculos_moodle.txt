@@ -1,0 +1,46 @@
+usuário e senha do banco
+usuário:tads_bd29
+senha: 123456
+
+6.
+SELECT veiculos.placa, SUM(multas.valor) AS soma_das_multas
+FROM veiculos
+INNER JOIN multas
+ON multas.chassis=veiculos.chassis
+GROUP BY veiculos.placa
+ORDER BY soma_das_multas ASC
+
+8. 
+SELECT proprietarios.nome, COUNT(veiculos.cnh_proprietarios) AS quantidade_de_veiculos
+FROM proprietarios
+INNER JOIN veiculos
+ON veiculos.cnh_proprietarios=proprietarios.cnh
+GROUP BY proprietarios.nome
+ORDER BY quantidade_de_veiculos ASC
+
+11.
+
+SELECT proprietarios.nome AS Nome, veiculosbaixados.veiculo_chassis AS CHASSIS
+FROM proprietarios
+INNER JOIN veiculos
+ON veiculos.cnh_proprietarios=proprietarios.cnh
+INNER JOIN veiculosbaixados
+ON veiculosbaixados.veiculo_chassis=veiculos.chassis
+ORDER BY proprietarios.nome
+
+12.
+
+SELECT COUNT(veiculosbaixados.codigo) AS Soma_dos_baixados
+FROM veiculosbaixados
+
+13.
+SELECT  cidade.nome, COUNT(veiculosbaixados.codigo) AS Soma_dos_baixados
+FROM cidade
+INNER JOIN veiculos
+ON veiculos.codigo_cidade=cidade.codigo
+INNER JOIN veiculosbaixados
+ON veiculosbaixados.veiculo_chassis=veiculos.chassis
+GROUP BY cidade.nome
+ORDER BY Soma_dos_baixados DESC
+
+

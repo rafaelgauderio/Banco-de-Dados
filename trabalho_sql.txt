@@ -1,0 +1,395 @@
+--exercício Lista SQL 01
+
+--1.Mostre todos os dados da tabela proprietários, ordenado pelo nome do proprietário
+SELECT *
+FROM proprietarios
+ORDER BY nome
+
+INSERT INTO multas (codigo,tipo,valor,chassis)
+VALUES (5,'buzinou na frente do hospital',1520,'ABC1894477896')
+
+--2. Mostre o somatório de todas as multas
+SELECT SUM (valor) AS Somatório_das_multas
+FROM multas
+  
+SELECT SUM (codigo)
+AS Somatório_dos_códigos
+FROM multas
+
+INSERT INTO veiculos
+(chassis,placa,tipo,vencimento_ipva,codigo_cidade, cnh_proprietarios, codigo_cor)
+VALUES
+('JKP1569457896','IKL2512','MOTO',TO_DATE('22/12/2019','DD,MM,YYYY'),6,7821151515,2) 
+
+--3. Mostre o nome da cidade que tem IPVA em atraso (mesmo que tenha mais de um veículo em atraso em uma cidade, o nome da cidade deve ser mostrado apenas 1 vez)
+SELECT nome, count(nome) quantidade_de_carros
+FROM cidade
+INNER JOIN veiculos
+ON veiculos.codigo_cidade=cidade.codigo
+WHERE vencimento_ipva < TO_DATE('12/11/2019','DD/MM/YYYY')
+GROUP BY cidade.nome
+
+--4. Mostre todos os veículos de um determinado tipo (você escolhe o tipo que fará a restrição)
+SELECT *
+FROM veiculos
+WHERE tipo='CAMINHÃO'
+
+--5.Informe o nome do proprietário e o número da placa para todos os registrados cadastrados
+
+SELECT proprietarios.nome, veiculos.placa AS placa 
+FROM veiculos 
+INNER JOIN proprietarios
+ON proprietarios.cnh=veiculos.cnh_proprietarios
+ORDER BY proprietarios.nome
+
+--6. Mostre o número da placa e valor de multas para cada placa
+
+SELECT veiculos.placa, SUM(multas.valor) AS soma_das_multas
+FROM veiculos
+INNER JOIN multas
+ON multas.chassis=veiculos.chassis
+GROUP BY veiculos.placa
+ORDER BY soma_das_multas ASC
+
+7. Mostre a quantidade de veículos por cor
+
+SELECT cor.nome AS cor_do_veiculo, COUNT(veiculos.codigo_cor) AS quantidade 
+FROM veiculos
+INNER JOIN cor
+ON cor.codigo=veiculos.codigo_cor
+GROUP BY cor.nome
+ORDER BY cor.nome ASC
+
+8. Mostre a quantidade de veículos por proprietário, ordenando da menor para a maior quantidade
+
+SELECT proprietarios.nome, COUNT(veiculos.cnh_proprietarios) AS quantidade_de_veiculos
+FROM proprietarios
+INNER JOIN veiculos
+ON veiculos.cnh_proprietarios=proprietarios.cnh
+GROUP BY proprietarios.nome
+ORDER BY quantidade_de_veiculos ASC
+
+9.	Crie uma nova tabela com o nome VeículosBaixados. Essa tabela guardará as informações de veículos baixados,
+ aqueles veículos que não poderão mais circular. Essa tabela deve ter a informação do veículo 
+que será chave estrangeira da tabela veículos, a data que o veículo foi baixado e um campo observação 
+que irá conter o motivo da baixa
+
+CREATE TABLE VeiculosBaixados
+( codigo NUMBER(20) CONSTRAINT  pk_codigo PRIMARY KEY, 
+  data_baixado DATE,
+  observacao VARCHAR2(50),
+  veiculo_chassis VARCHAR2(15),
+  CONSTRAINT fk_veiculos_chassis FOREIGN KEY (veiculo_chassis) REFERENCES veiculos(chassis)
+);
+
+--10. Popular a tabela (inserir dados na tabela)
+
+INSERT INTO VeiculosBaixados
+(codigo, data_baixado,observacao,veiculo_chassis)
+VALUES
+(1, TO_DATE ('15/12/2019','DD/MM/YYYY'), 'colisão causou perda total no veículo', 'NJP1596587946')  
+
+INSERT INTO VeiculosBaixados
+(codigo, data_baixado,observacao,veiculo_chassis)
+VALUES
+(2, TO_DATE ('20/11/2019','DD/MM/YYYY'), 'veículo com dívida de IPVA', 'PHL1891977896')
+
+INSERT INTO VeiculosBaixados
+(codigo, data_baixado,observacao,veiculo_chassis)
+VALUES
+(3, TO_DATE ('25/11/2019','DD/MM/YYYY'), 'veículo com dívida de IPVA', 'ABC1894477896')
+
+INSERT INTO VeiculosBaixados
+(codigo, data_baixado,observacao,veiculo_chassis)
+VALUES
+(4, TO_DATE ('29/11/2019','DD/MM/YYYY'), 'veículo com dívida de IPVA', 'ABC1894477896')
+
+--11.Mostre o nome do proprietário e o número do chassis para todos os veículos baixados
+
+SELECT proprietarios.nome AS Nome, veiculosbaixados.veiculo_chassis AS CHASSIS
+FROM proprietarios
+INNER JOIN veiculos
+ON veiculos.cnh_proprietarios=proprietarios.cnh
+INNER JOIN veiculosbaixados
+ON veiculosbaixados.veiculo_chassis=veiculos.chassis
+ORDER BY proprietarios.nome
+
+--12. Mostre a soma de todos os veículos baixados
+
+SELECT COUNT(veiculosbaixados.codigo) AS Soma_dos_baixados
+FROM veiculosbaixados
+
+13. Mostre a soma de veículos baixados por cidade, ordenado de forma decrescente
+
+SELECT  cidade.nome, COUNT(veiculosbaixados.codigo) AS Soma_dos_baixados
+FROM cidade
+INNER JOIN veiculos
+ON veiculos.codigo_cidade=cidade.codigo
+INNER JOIN veiculosbaixados
+ON veiculosbaixados.veiculo_chassis=veiculos.chassis
+GROUP BY cidade.nome
+ORDER BY Soma_dos_baixados DESC
+
+----- comandos testes ---------------------------------
+
+--exercício Lista SQL 01
+
+--1.Mostre todos os dados da tabela proprietários, ordenado pelo nome do proprietário
+SELECT *
+FROM proprietarios
+ORDER BY nome
+
+INSERT INTO multas (codigo,tipo,valor,chassis)
+VALUES (5,'buzinou na frente do hospital',1520,'ABC1894477896')
+
+--2. Mostre o somatório de todas as multas
+SELECT SUM (valor) AS Somatório_das_multas
+FROM multas
+  
+SELECT SUM (codigo)
+AS Somatório_dos_códigos
+FROM multas
+
+INSERT INTO veiculos
+(chassis,placa,tipo,vencimento_ipva,codigo_cidade, cnh_proprietarios, codigo_cor)
+VALUES
+('JKP1569457896','IKL2512','MOTO',TO_DATE('22/12/2019','DD,MM,YYYY'),6,7821151515,2)
+
+INSERT INTO veiculos
+(chassis,placa,tipo,vencimento_ipva,codigo_cidade, cnh_proprietarios, codigo_cor)
+VALUES
+('JKP1569457820','IKL1490','SUV',TO_DATE('22/11/2019','DD,MM,YYYY'),6,7821151515,4)  
+
+--3. Mostre o nome da cidade que tem IPVA em atraso (mesmo que tenha mais de um veículo em atraso em uma cidade, o nome da cidade deve ser mostrado apenas 1 vez)
+SELECT nome, count(nome) quantidade_de_carros
+FROM cidade
+INNER JOIN veiculos
+ON veiculos.codigo_cidade=cidade.codigo
+WHERE vencimento_ipva < TO_DATE('12/11/2019','DD/MM/YYYY')
+GROUP BY cidade.nome
+
+--4. Mostre todos os veículos de um determinado tipo (você escolhe o tipo que fará a restrição)
+SELECT *
+FROM veiculos
+WHERE tipo='CAMINHÃO'
+
+--5.Informe o nome do proprietário e o número da placa para todos os registrados cadastrados
+
+SELECT proprietarios.nome, veiculos.placa AS placa 
+FROM veiculos 
+INNER JOIN proprietarios
+ON proprietarios.cnh=veiculos.cnh_proprietarios
+ORDER BY proprietarios.nome
+
+6. Mostre o número da placa e valor de multas para cada placa
+
+SELECT veiculos.placa, SUM(multas.valor) AS soma_das_multas
+FROM veiculos
+INNER JOIN multas
+ON multas.chassis=veiculos.chassis
+GROUP BY veiculos.placa
+ORDER BY soma_das_multas ASC
+
+7. Mostre a quantidade de veículos por cor
+
+SELECT cor.nome AS cor_do_veiculo, COUNT(veiculos.codigo_cor) AS quantidade 
+FROM veiculos
+INNER JOIN cor
+ON cor.codigo=veiculos.codigo_cor
+GROUP BY cor.nome
+ORDER BY cor.nome ASC
+
+8. Mostre a quantidade de veículos por proprietário, ordenando da menor para a maior quantidade
+
+SELECT proprietarios.nome, COUNT(veiculos.cnh_proprietarios) AS quantidade_de_veiculos
+FROM proprietarios
+INNER JOIN veiculos
+ON veiculos.cnh_proprietarios=proprietarios.cnh
+GROUP BY proprietarios.nome
+ORDER BY quantidade_de_veiculos ASC
+
+9.	Crie uma nova tabela com o nome VeículosBaixados. Essa tabela guardará as informações de veículos baixados, aqueles veículos que não poderão mais circular. Essa tabela deve ter a informação do veículo que será chave estrangeira da tabela veículos, a data que o veículo foi baixado e um campo observação que irá conter o motivo da baixa
+
+CREATE TABLE VeiculosBaixados
+( codigo NUMBER(20) CONSTRAINT  pk_codigo PRIMARY KEY, 
+  data_baixado DATE,
+  observacao VARCHAR2(50),
+  veiculo_chassis VARCHAR2(15),
+  CONSTRAINT fk_veiculos_chassis FOREIGN KEY (veiculo_chassis) REFERENCES 
+  veiculos(chassis) );
+
+--10. Popular a tabela (inserir dados na tabela)
+
+INSERT INTO VeiculosBaixados
+(codigo, data_baixado,observacao,veiculo_chassis)
+VALUES
+(1, TO_DATE ('15/12/2019','DD/MM/YYYY'), 'colisão causou perda total no veículo', 'NJP1596587946')  
+
+INSERT INTO VeiculosBaixados
+(codigo, data_baixado,observacao,veiculo_chassis)
+VALUES
+(2, TO_DATE ('20/11/2019','DD/MM/YYYY'), 'veículo com dívida de IPVA', 'PHL1891977896')
+
+INSERT INTO VeiculosBaixados
+(codigo, data_baixado,observacao,veiculo_chassis)
+VALUES
+(3, TO_DATE ('25/11/2019','DD/MM/YYYY'), 'veículo com dívida de IPVA', 'ABC1894477896')
+
+INSERT INTO VeiculosBaixados
+(codigo, data_baixado,observacao,veiculo_chassis)
+VALUES
+(4, TO_DATE ('29/11/2019','DD/MM/YYYY'), 'veículo com dívida de IPVA', 'ABC1894477896')
+
+--11.Mostre o nome do proprietário e o número do chassis para todos os veículos baixados
+
+SELECT proprietarios.nome AS Nome, veiculosbaixados.veiculo_chassis AS CHASSIS
+FROM proprietarios
+INNER JOIN veiculos
+ON veiculos.cnh_proprietarios=proprietarios.cnh
+INNER JOIN veiculosbaixados
+ON veiculosbaixados.veiculo_chassis=veiculos.chassis
+ORDER BY proprietarios.nome
+
+
+--12. Mostre a soma de todos os veículos baixados
+
+SELECT COUNT(veiculosbaixados.codigo) AS Soma_dos_baixados
+FROM veiculosbaixados
+
+13. Mostre a soma de veículos baixados por cidade, ordenado de forma decrescente
+
+SELECT  cidade.nome, COUNT(veiculosbaixados.codigo) AS Total_dos_baixados
+FROM cidade
+INNER JOIN veiculos
+ON veiculos.codigo_cidade=cidade.codigo
+INNER JOIN veiculosbaixados
+ON veiculosbaixados.veiculo_chassis=veiculos.chassis
+GROUP BY cidade.nome
+ORDER BY Total_dos_baixados DESC
+
+
+--
+
+
+SELECT PLACA
+FROM VEICULOS
+WHERE CODIGO_CIDADE = 2
+
+SELECT PLACA
+FROM VEICULOS
+WHERE CODIGO_CIDADE = 2
+
+SELECT VEICULOS.PLACA
+FROM VEICULOS
+INNER JOIN CIDADE
+ON CIDADE.CODIGO = VEICULOS.CODIGO_CIDADE
+WHERE CIDADE.NOME = 'Guaiba'
+
+--DISTINCT elimina os valores reptidos
+SELECT DISTINCT(cidade.nome)
+FROM CIDADE
+INNER JOIN VEICULOS
+ON VEICULOS.CODIGO_CIDADE=CIDADE.CODIGO
+WHERE vencimento_ipva < to_date('06/11/2019', 'DD/MM/YYYY')
+
+
+INSERT INTO veiculos
+(chassis, placa, tipo, vencimento_ipva,codigo_cidade,cnh_proprietarios,codigo_cor)
+VALUES ('NJP1596587946','POB1590', 'CAMINHÃO', to_date('05/06/2019' ,'DD/MM/YYYY'),6,1161114949,4)
+
+SELECT *
+FROM veiculos
+WHERE tipo='SEDAN' OR tipo='CAMIONETE'
+
+SELECT  proprietarios.nome, veiculos.placa
+FROM proprietarios
+INNER JOIN veiculos
+ON  veiculos.cnh_proprietarios = proprietarios.cnh
+
+
+SELECT  proprietarios.nome, COUNT(veiculos.placa)
+FROM proprietarios 
+INNER JOIN veiculos
+ON  veiculos.cnh_proprietarios = proprietarios.cnh
+GROUP BY proprietarios.nome 
+
+--Referenciando com alias
+SELECT  p.nome, COUNT(v.placa)
+FROM proprietarios p
+INNER JOIN veiculos v
+ON  v.cnh_proprietarios = p.cnh
+GROUP BY p.nome
+
+SELECT veiculos.placa, SUM(multas.valor)
+FROM  veiculos
+INNER JOIN multas
+ON multas.chassis = veiculos.chassis
+GROUP BY veiculos.placa
+
+SELECT cor.nome, COUNT(veiculos.codigo_cor)
+FROM cor
+INNER JOIN veiculos
+ON veiculos.codigo_cor =cor.codigo
+GROUP BY cor.nome 
+
+--ORDEM CRESCESNTE
+SELECT proprietarios.nome, COUNT(veiculos.cnh_proprietarios) AS soma_de_veiculos
+FROM proprietarios
+INNER JOIN veiculos
+ON veiculos.cnh_proprietarios= proprietarios.cnh
+GROUP BY proprietarios.nome
+ORDER BY soma_de_veiculos ASC 
+
+--ORDEM DECRESCESNTE
+SELECT proprietarios.nome, COUNT(veiculos.cnh_proprietarios) AS soma_de_veiculos
+FROM proprietarios
+INNER JOIN veiculos
+ON veiculos.cnh_proprietarios= proprietarios.cnh
+GROUP BY proprietarios.nome
+ORDER BY soma_de_veiculos DESC
+
+CREATE TABLE VeiculosBaixados
+( codigo NUMBER(20) CONSTRAINT  pk_codigo PRIMARY KEY, 
+  data_baixado DATE,
+  observacao VARCHAR2(50),
+  veiculo_chassis VARCHAR2(15),
+  CONSTRAINT fk_veiculos_chassis FOREIGN KEY (veiculo_chassis) REFERENCES 
+  veiculos(chassis) );
+
+INSERT INTO VeiculosBaixados
+(codigo, data_baixado,observacao,veiculo_chassis)
+VALUES (1, to_date ('15/12/2019','DD/MM/YYYY'), 'colisão causou perda total no veículo', 'NJP1596587946')  
+
+INSERT INTO VeiculosBaixados
+(codigo, data_baixado,observacao,veiculo_chassis)
+VALUES (2, to_date ('20/11/2019','DD/MM/YYYY'), 'veículo com dívida de IPVA', 'PHL1891977896')
+
+INSERT INTO VeiculosBaixados
+(codigo, data_baixado,observacao,veiculo_chassis)
+VALUES (3, to_date ('25/11/2019','DD/MM/YYYY'), 'veículo com dívida de IPVA', 'ABC1894477896')
+
+
+
+SELECT proprietarios.nome, veiculos.chassis
+FROM proprietarios
+INNER JOIN veiculos
+ON veiculos.cnh_proprietarios = proprietarios.cnh
+INNER JOIN veiculosbaixados
+ON veiculosbaixados.veiculo_chassis = veiculos.chassis
+WHERE nome='MARIA GADU' 
+
+SELECT COUNT (veiculosbaixados.codigo) AS contagem_dos_veiculos_baixados
+FROM veiculosbaixados
+
+SELECT cidade.nome, COUNT(veiculosbaixados.codigo) AS quantidade
+FROM veiculosbaixados
+INNER JOIN veiculos
+ON veiculos.chassis=veiculosbaixados.veiculo_chassis
+INNER JOIN cidade
+ON cidade.codigo=veiculos.codigo_cidade
+GROUP BY cidade.nome
+ORDER BY quantidade DESC 
+
+INSERT INTO VeiculosBaixados
+(codigo, data_baixado,observacao,veiculo_chassis)
+VALUES (4, to_date ('29/11/2019','DD/MM/YYYY'), 'veículo com dívida de IPVA', 'ABC1894477896')

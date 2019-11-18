@@ -1,0 +1,36 @@
+Cozinheiro(*RG, data, salario, nome, nomefantasia)
+
+RestaurantesTrabalham(*codigo,nome)
+
+CozinheiroRestTrab(*codigo,*RG, codrest)
+	codrest referencia RestaurantesTrabalham
+	RG referencia Cozinheiro
+
+Editor(*RG, data, salario, nome)
+
+Degustador(*RG, data, salario, nome)
+
+Categoria(*codigo,nome)
+
+Livro(*titulo,ISBN)
+
+Ingredientes(*codigo,descricao)
+
+Receita(*codigo,nome,datainvencao,codcat)
+   codcat referencia Categoria
+
+LivroReceita(*titulo,*codReceita)
+	titulo referencia Livro
+	codReceita referencia Receita
+
+ReceitaIng(*codReceita,*codIng,quantidade, medida)
+   codReceita referencia Receita
+   codIng referencia Ingredientes
+
+ReceitaCozinheiro(*RG,*nomeReceita,codReceita)
+   RG referencia Cozinheiro
+   codReceita referencia Receita
+
+ReceitaTesteDegust(*codReceita,*RG,data,nota)
+   codReceita referencia Receita
+   RG referencia Degustador
